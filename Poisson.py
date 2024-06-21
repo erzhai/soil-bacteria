@@ -10,28 +10,56 @@ matplotlib.use('TkAgg')
 # importing matplotlib as plt
 import matplotlib.pyplot as plt
 
-from env import *
+from bacteria import *
 
 from math import *
 
-lst = []
+def calc_conc(num_empty):
+    mean = calc_mean(num_empty)
+    return mean / vol_well * 1000 ## in mL
 
-x = 96
+num_wells = 96
+vol_well = 150
 
-for i in range(x):
-    mean = -log(1 - i/x)
-    prob1 = exp(-mean) * mean
+power = int(input("Starting density (powers of 10), bacteria/gram: "))
+start_conc = 10 ** power
+start_conc = start_conc / 1000 * 5 / 1.5 / 15
+
+singles = np.array(run_pops(WellPlate(vol_well, num_wells), 100)[:-1])
+conc = []
+
+for i, _ in enumerate(singles):
+    conc.append(calc_conc(96 - i)/ start_conc)
+np.array(conc)
+
+plt.plot(conc, np.array([96 - i for i in range(num_wells)]), "g", label="Total Growth")
+plt.plot(conc, singles, "r", label="Single Growths")
+plt.xlabel("Concentration (bacteria / mL)")
+plt.ylabel("Number of wells with growth")
+plt.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
+plt.legend(loc="upper right")
+plt.title(f"Dilutions for starting density: $10^{{{power}}}$ bacteria / gram")
+plt.show()
+
+
+
     
-    prob2 = i/x - prob1
+
+
+
+# for i in range(x):
+#     mean = -log(1 - i/x)
+#     prob1 = exp(-mean) * mean
     
-    percent = exp(prob1 -prob2) * 100
-
-    lst.append([i, int(prob1 * x), int(prob2 * x), int(percent)])
-
-print(np.array(lst))
+#     prob2 = i/x - prob1
     
+#     percent = exp(prob1 -prob2) * 100
 
-        
+#     lst.append([i, int(prob1 * x), int(prob2 * x), int(percent)])
+
+# print(np.array(lst))
+    
+# plt.plot()
 
  
 

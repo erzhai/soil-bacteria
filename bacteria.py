@@ -3,24 +3,24 @@ import math
 
 rows = ["A", "B", "C", "D", "E", "F", "G", "H"]
 
-class Bacteria():
-    def __init__(self, density: float):
-        self.density = density
+# class Bacteria():
+#     def __init__(self, density: float):
+#         self.density = density
 
 class Well():
-    def __init__(self, name: str, bacteria: Bacteria, vol: float):
+    def __init__(self, name: str, vol: float):
         self.name: str = name
-        self.density: float = bacteria.density ##units of bacteria/mL
+        # self.density: float = bacteria.density ##units of bacteria/mL
         self.vol: float = vol
         self.growth: bool = False
         self.num_bacteria: int = 0
         
     
 class WellPlate():
-    def __init__(self, bacteria: Bacteria, vol: float , num_wells: int = 88):
+    def __init__(self, vol: float , num_wells: int = 96):
         self.wells: list = []   
         for i in range(num_wells):
-            self.wells.append(Well(rows[i//12] + f"{i%8 + 1}", bacteria, vol))
+            self.wells.append(Well(rows[i//12] + f"{i%8 + 1}", vol))
 
     def tot_bacteria(self):
         count = 0
@@ -64,6 +64,8 @@ def run_pops_single(plate: WellPlate, empty: int, num_trials: int = 100):
     return {i:lst.count(i) for i in lst}
 
 def run_pops(plate: WellPlate, num_trials: int = 100):
+    lst = []
+
     for i in range(97):
         tot = 0
         pops = run_pops_single(plate, 96 - i, num_trials)
@@ -74,7 +76,10 @@ def run_pops(plate: WellPlate, num_trials: int = 100):
         prob1 = avg/96
         prob2 = i/96 - prob1
         
-        print(f"{i} filled plates: {avg} singles, Arb. comparison: {math.exp(prob1 - prob2)}")
+        print(f"{i} wells with growth: {avg} singles, Arb. comparison: {math.exp(prob1 - prob2)}")
+        lst.append(avg)
+
+    return lst
 
 
 
